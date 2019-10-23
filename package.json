@@ -1,0 +1,23 @@
+{
+  "name": "Book-API-Two",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:build": "tsc -w",
+    "start:run": "nodemon build/app.js",
+    "start": "concurrently npm:start:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.7.6",
+    "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.5.23",
+    "@types/uuid": "^3.4.5",
+    "concurrently": "^5.0.0"
+  }
+}
