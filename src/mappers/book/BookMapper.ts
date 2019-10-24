@@ -1,8 +1,9 @@
 import { IMapper } from "../shared/mapper";
 import { Book } from "../../models/book/Book";
 import { IBookSchema } from './../../models/book/bookSchema';
+import { IBookResponseDTO } from "../../dtos/book";
 
-export const BookMapper = (): IMapper<Book, IBookSchema> => ({
+export const BookMapper = (): IMapper<Book, IBookSchema, IBookResponseDTO> => ({
     toPersistence: (book: Book): IBookSchema => ({
         _id: book.id,
         title: book.title,
@@ -18,5 +19,15 @@ export const BookMapper = (): IMapper<Book, IBookSchema> => ({
             author: raw.author,
             publishingDate: raw.publishingDate,
             finishedReading: raw.finishedReading
-        }, raw._id)
+        }, raw._id),
+    toResponseDTO: (book: Book): IBookResponseDTO => ({
+        book: {
+            id: book.id,
+            title: book.title,
+            isbn: book.isbn,
+            author: book.author,
+            publishingDate: book.publishingDate,
+            finishedReading: book.finishedReading
+        }
+    })
 });
