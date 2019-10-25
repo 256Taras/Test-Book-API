@@ -1,9 +1,9 @@
 import { IRepository } from "./shared/repository";
 import { Book } from "../models/book/Book";
 import { IBookSchema, BookDatabaseModel } from './../models/book/bookSchema';
-import { IMapper } from "../mappers/shared/mapper";
-import { IBookResponseDTO } from "../dtos/book";
+import { IDomainPersistenceMapper } from "../mappers/shared/mapper";
 
+// Notice interface methods follow CQS.
 export interface IBookRepository extends IRepository {
     createBook(book: Book): Promise<void>;
     getAllBooks(): Promise<Book[]>;
@@ -14,13 +14,15 @@ export interface IBookRepository extends IRepository {
 
 export class BookRepository implements IBookRepository {
     private books: Array<IBookSchema>;
+    private readonly bookMapper: IDomainPersistenceMapper<Book, IBookSchema>
 
     constructor(
         private readonly BookModel: BookDatabaseModel,
-        private readonly bookMapper: IMapper<Book, IBookSchema, IBookResponseDTO>
+        bookDomainPersistenceMapper: IDomainPersistenceMapper<Book, IBookSchema>
     ) {
         // Operate on an in-memory collection for now.
         this.books = [];
+        this.bookMapper = bookDomainPersistenceMapper;
     }
 
     async createBook(book: Book): Promise<void> {

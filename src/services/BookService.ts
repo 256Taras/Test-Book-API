@@ -1,6 +1,6 @@
 import { IBookRequestDTO, IBookResponseDTO } from "../dtos/book";
 import { Book } from "../models/book/Book";
-import { IMapper } from "../mappers/shared/mapper";
+import { IDomainResponseDTOMapper } from "../mappers/shared/mapper";
 import { IBookSchema } from "../models/book/bookSchema";
 import { IBookRepository } from "../repositories/BookRepository";
 
@@ -13,10 +13,14 @@ export interface IBookService {
 }
 
 export class BookService implements IBookService {
+    private readonly bookMapper: IDomainResponseDTOMapper<Book, IBookResponseDTO>;
+
     constructor(
         private readonly bookRepository: IBookRepository,
-        private readonly bookMapper: IMapper<Book, IBookSchema, IBookResponseDTO>
-    ) {}
+        bookDomainResponseDTOMapper: IDomainResponseDTOMapper<Book, IBookResponseDTO>
+    ) {
+        this.bookMapper = bookDomainResponseDTOMapper;
+    }
 
     async createBook(bookDTO: IBookRequestDTO): Promise<void> {
         const book = Book.create(bookDTO.book);

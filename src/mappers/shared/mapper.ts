@@ -1,5 +1,8 @@
-export interface IMapper<DomainModel, DatabaseSchema, ResponseDTO> {
+export interface IDomainPersistenceMapper<DomainModel, DatabaseSchema> {
     toPersistence(domainModel: DomainModel): DatabaseSchema;
     toDomain(raw: DatabaseSchema): DomainModel;
-    toResponseDTO(domainModel: DomainModel): ResponseDTO;
+}
+
+export interface IDomainResponseDTOMapper<DomainModel, ResponseDTO> {
+    toResponseDTO(domainModel: DomainModel):ResponseDTO;
 }
