@@ -54,7 +54,7 @@ export const BookDomainPersistenceMapper = (): IDomainPersistenceMapper<Book, IB
         finishedReading: book.finishedReading
     }),
     toDomain: (raw: IBookSchema): Result<Book> => {
-        return attemptToCreateBook(raw);
+        return attemptToCreateBook(raw, raw._id);
     }
 });
 

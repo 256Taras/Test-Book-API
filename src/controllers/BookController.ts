@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { route, GET, POST, PATCH, DELETE, before } from 'awilix-router-core';
 import { IBookService } from '../services/BookService';
-import { IBookRequestDTO } from '../dtos/book';
+import { IBookDTO, IBookRequestDTO } from '../dtos/book';
 import { IHttpHandler } from './shared/HttpHandler';
 import { IBookArrayResponseDTO } from './../dtos/book';
 
+@route('/books')
 export class BookController {
     constructor(
         private readonly bookService: IBookService,
@@ -48,8 +49,14 @@ export class BookController {
 
     @route('/:id')
     @PATCH()
-    update(req: Request, res: Response) {
-        const bookUpdatesDTO = req.body as Partial<IBookRequestDTO>;
-        return this.httpHandler.ok('Action Not Implemented');
+    async update(req: Request, res: Response) {
+        const bookUpdatesDTO = req.body.book as Partial<IBookDTO>;
+        const result = await this.bookService.updateBookById(req.params.id, bookUpdatesDTO);
+
+        return result.isFailure ? (
+            this.httpHandler.fromResultError(result)
+        ) : (
+            this.httpHandler.ok()
+        )
     }
 }

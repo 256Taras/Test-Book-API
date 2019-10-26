@@ -53,6 +53,7 @@ export class HttpHandler implements IHttpHandler {
     }
 
     public failure(error?: Error | string): Response {
+        console.log(error)
         return this.json(500, { error: error ? error.toString() : 'An unexpected error occurred' });
     }
 }

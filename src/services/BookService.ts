@@ -1,4 +1,4 @@
-import { IBookRequestDTO, IBookResponseDTO } from "../dtos/book";
+import { IBookRequestDTO, IBookResponseDTO, IBookDTO } from "../dtos/book";
 import { Book } from "../models/book/Book";
 import { IDomainDTOMapper } from "../mappers/shared/mapper";
 import { IBookRepository } from "../repositories/BookRepository";
@@ -9,7 +9,7 @@ export interface IBookService {
     createBook(bookDTO: IBookRequestDTO): Promise<Result<void>>;
     getAllBooks(): Promise<Result<IBookResponseDTO[]>>;
     getBookById(id: string): Promise<Result<Book>>;
-    updateBookById(id: string, updates: Partial<IBookRequestDTO>): Promise<Result<void>>;
+    updateBookById(id: string, updates: Partial<IBookDTO>): Promise<Result<void>>;
     deleteBookById(id: string): Promise<Result<void>>;
 }
 
@@ -48,17 +48,8 @@ export class BookService implements IBookService {
         throw new Error("Method not implemented.");
     }
 
-    async updateBookById(id: string, updates: Partial<IBookRequestDTO>): Promise<Result<void>> {
-        const originalBookOrFailure = await this.bookRepository.getBookById(id);
-        
-        if (originalBookOrFailure.isFailure)
-            return Result.fail<void>(originalBookOrFailure.resultType, originalBookOrFailure.error);
-
-        const originalBook = originalBookOrFailure.value;
-
-        // A little stuck about what to next.
-
-        return Result.pass<void>(); // Just to make it compile for now.
+    async updateBookById(id: string, updates: Partial<IBookDTO>): Promise<Result<void>> {
+        return this.bookRepository.updateBookById(id, updates);
     }
 
     async deleteBookById(id: string): Promise<Result<void>> {

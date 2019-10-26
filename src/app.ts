@@ -4,7 +4,11 @@ import { scopePerRequest, loadControllers } from 'awilix-express';
 import { containerFactory } from './container/compositionRoot';
 import { asValue } from 'awilix';
 
+import { connectionFactory } from './database/mongoose';
+connectionFactory();
+
 const app = express();
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
