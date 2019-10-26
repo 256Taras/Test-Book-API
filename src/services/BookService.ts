@@ -1,42 +1,67 @@
 import { IBookRequestDTO, IBookResponseDTO } from "../dtos/book";
 import { Book } from "../models/book/Book";
-import { IDomainResponseDTOMapper } from "../mappers/shared/mapper";
-import { IBookSchema } from "../models/book/bookSchema";
+import { IDomainDTOMapper } from "../mappers/shared/mapper";
 import { IBookRepository } from "../repositories/BookRepository";
+import { Result, ResultType } from "../utils/Result";
 
 // Notice: Interface complies with CQS.
 export interface IBookService {
-    createBook(bookDTO: IBookRequestDTO): Promise<void>;
-    getAllBooks(): Promise<IBookResponseDTO[]>;
-    getBookById(id: string): Promise<Book>;
-    deleteBookById(id: string): Promise<void>;
+    createBook(bookDTO: IBookRequestDTO): Promise<Result<void>>;
+    getAllBooks(): Promise<Result<IBookResponseDTO[]>>;
+    getBookById(id: string): Promise<Result<Book>>;
+    updateBookById(id: string, updates: Partial<IBookRequestDTO>): Promise<Result<void>>;
+    deleteBookById(id: string): Promise<Result<void>>;
 }
 
 export class BookService implements IBookService {
-    private readonly bookMapper: IDomainResponseDTOMapper<Book, IBookResponseDTO>;
+    private readonly bookMapper: IDomainDTOMapper<Book, IBookRequestDTO, IBookResponseDTO>;
 
     constructor(
         private readonly bookRepository: IBookRepository,
-        bookDomainResponseDTOMapper: IDomainResponseDTOMapper<Book, IBookResponseDTO>
+        bookDomainDTOMapper: IDomainDTOMapper<Book, IBookRequestDTO, IBookResponseDTO>
     ) {
-        this.bookMapper = bookDomainResponseDTOMapper;
+        this.bookMapper = bookDomainDTOMapper;
     }
 
-    async createBook(bookDTO: IBookRequestDTO): Promise<void> {
-        const book = Book.create(bookDTO.book);
-        await this.bookRepository.createBook(book);
+    async createBook(bookDTO: IBookRequestDTO): Promise<Result<void>> {
+        const bookOrFailure = this.bookMapper.toDomain(bookDTO);
+
+        if (bookOrFailure.isFailure) 
+            return Result.fail<void>(bookOrFailure.resultType, bookOrFailure.error);
+
+        return this.bookRepository.insertBook(bookOrFailure.value);
     }    
     
-    async getAllBooks(): Promise<IBookResponseDTO[]> {
-        const books = await this.bookRepository.getAllBooks();
-        return books.map(book => this.bookMapper.toResponseDTO(book));
+    async getAllBooks(): Promise<Result<IBookResponseDTO[]>> {
+        const booksOrFailure = await this.bookRepository.getAllBooks();
+
+        if (booksOrFailure.isFailure) 
+            return Result.fail<IBookResponseDTO[]>(booksOrFailure.resultType, booksOrFailure.error);
+
+        const books = booksOrFailure.value;
+        const bookDTOs = books.map(book => this.bookMapper.toResponseDTO(book));
+
+        return Result.pass<IBookResponseDTO[]>(bookDTOs);
     }
 
-    async getBookById(id: string): Promise<Book> {
+    async getBookById(id: string): Promise<Result<Book>> {
         throw new Error("Method not implemented.");
     }
 
-    async deleteBookById(id: string): Promise<void> {
+    async updateBookById(id: string, updates: Partial<IBookRequestDTO>): Promise<Result<void>> {
+        const originalBookOrFailure = await this.bookRepository.getBookById(id);
+        
+        if (originalBookOrFailure.isFailure)
+            return Result.fail<void>(originalBookOrFailure.resultType, originalBookOrFailure.error);
+
+        const originalBook = originalBookOrFailure.value;
+
+        // A little stuck about what to next.
+
+        return Result.pass<void>(); // Just to make it compile for now.
+    }
+
+    async deleteBookById(id: string): Promise<Result<void>> {
         throw new Error("Method not implemented.");
     }
 }

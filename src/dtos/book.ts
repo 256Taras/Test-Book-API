@@ -1,3 +1,15 @@
+export namespace RequestDTOs {
+
+}
+
+export namespace ResponseDTOs {
+
+}
+
+
+
+
+
 export interface IBookRequestDTO {
     book: {
         title: string;
@@ -16,3 +28,7 @@ export interface IBookResponseDTO {
         id: string;
     }
 }
+
+export interface IBookArrayResponseDTO {
+    books: IBookRequestDTO[];
+};
