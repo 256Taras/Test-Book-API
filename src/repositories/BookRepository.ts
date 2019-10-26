@@ -34,7 +34,6 @@ export class BookRepository implements IBookRepository {
             await newBook.save();
             return Result.pass<void>();
         } catch (e) {
-            console.log(e)
             return Result.fail<void>(ResultType.Unexpected, 'An unexpected error occurred.');
         }
     }
@@ -80,7 +79,6 @@ export class BookRepository implements IBookRepository {
     }
 
     async updateBookById(id: string, updates: any): Promise<Result<void>> {
-        console.log(JSON.stringify(updates, undefined, 2))
         try {
             // Keep the original so we can rollback if validation on domain model fails.
             const originalPersistenceBook = await this.BookModel.findById(id);
@@ -89,8 +87,6 @@ export class BookRepository implements IBookRepository {
                 return Result.fail<void>(ResultType.NotFound, `Resource with ${id} not found.`)
             
             const updatedPersistenceBook = await this.BookModel.findByIdAndUpdate(id, updates, { new: true }) as IBookModel;
-            
-            console.log('updated', updatedPersistenceBook.toJSON())
 
             const updatedBookEntityOrFailure = this.bookMapper.toDomain(updatedPersistenceBook);
 
